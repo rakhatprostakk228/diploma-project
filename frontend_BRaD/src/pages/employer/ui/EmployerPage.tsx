@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 
 export const EmployerPage = () => {
   const { currentUser, getUser } = useUserStore();
-  const { jobs, setSelectedJob } = useJobStore();
+  const { jobs } = useJobStore();
   const [showJobForm, setShowJobForm] = useState(false);
   const [editingJob, setEditingJob] = useState<string | null>(null);
 

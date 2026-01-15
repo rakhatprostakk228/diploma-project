@@ -3,7 +3,6 @@ import { ArrowLeft } from 'lucide-react';
 import { AppHeader } from '@widgets/app-header';
 import { JobFilters } from '@features/job-filters';
 import { JobsList } from '@widgets/jobs-list';
-import { Button } from '@shared/ui';
 
 export const JobsPage = () => {
   return (

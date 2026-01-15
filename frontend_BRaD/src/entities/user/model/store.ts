@@ -176,7 +176,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     }
   },
 
-  register: async (email: string, password: string, name: string, role: 'candidate' | 'employer') => {
+  register: async (email: string, _password: string, name: string, role: 'candidate' | 'employer') => {
     const newUser: User = {
       id: `user${Date.now()}`,
       email,

@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, DollarSign, Briefcase, MessageSquare } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, DollarSign, MessageSquare } from 'lucide-react';
 import { AppHeader } from '@widgets/app-header';
 import { Button } from '@shared/ui';
 import { useJobStore } from '@entities/job';

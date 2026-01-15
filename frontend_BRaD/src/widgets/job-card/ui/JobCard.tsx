@@ -1,4 +1,4 @@
-import { MapPin, Clock, DollarSign, Briefcase, MessageSquare } from 'lucide-react';
+import { MapPin, Clock, DollarSign, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Job } from '@entities/job';
 import { useUserStore } from '@entities/user';

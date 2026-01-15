@@ -27,7 +27,6 @@ export const ChatWindow = ({
   const { currentUser, getUser } = useUserStore();
 
   const messages = getMessages(conversationId);
-  const receiver = getUser(receiverId);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

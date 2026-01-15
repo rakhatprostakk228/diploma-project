@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Briefcase, User, LogOut, MessageSquare, Menu, X } from 'lucide-react';
+import { User, LogOut, MessageSquare, Menu, X } from 'lucide-react';
 import { Button } from '@shared/ui';
 import { useUserStore } from '@entities/user';
 import { useState } from 'react';
