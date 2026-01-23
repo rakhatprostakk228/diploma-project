@@ -21,9 +21,8 @@ export const AppHeader = () => {
           <div className="flex items-center justify-between h-16">
             <Link to="/app" className="flex items-baseline gap-1 group">
               <span className="font-heading text-xl sm:text-2xl font-extrabold text-gradient tracking-tight">
-                BRaD
+                BRaD.
               </span>
-              <span className="font-heading text-xl sm:text-2xl font-extrabold text-primary">.</span>
             </Link>
 
             <nav className="hidden lg:flex items-center gap-6">

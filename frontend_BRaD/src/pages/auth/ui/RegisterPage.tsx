@@ -46,8 +46,7 @@ export const RegisterPage = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <Link to="/app" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
-          <span className="font-heading text-2xl font-extrabold text-gradient">BRaD</span>
-          <span className="font-heading text-2xl font-extrabold text-primary">.</span>
+          <span className="font-heading text-2xl font-extrabold text-gradient">BRaD.</span>
         </Link>
 
         <div className="bg-card rounded-2xl shadow-xl p-8 relative">

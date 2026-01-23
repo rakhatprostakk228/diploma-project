@@ -1,39 +1,83 @@
-import { Github, Linkedin, Twitter } from "lucide-react";
+import "../../../pages/landing/ui/landing.css";
 
 export const LandingFooter = () => {
   return (
-    <footer className="bg-foreground text-background py-12">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-baseline gap-1">
-            <span className="font-heading text-3xl font-extrabold text-primary tracking-tight">
-              BRaD
-            </span>
-            <span className="font-heading text-3xl font-extrabold text-background/80">
-              .
-            </span>
+    <footer className="footer">
+      <div className="container">
+        <div className="footer-grid">
+          {/* Brand */}
+          <div className="footer-brand">
+            <div className="footer-logo">
+              <img src="/images/logo/logo.png" alt="BRaD Logo" className="footer-logo-img" />
+            </div>
+            <p className="footer-description">
+              Connecting talent with opportunity through smart matching and virtual internships.
+            </p>
           </div>
-          <p className="text-background/60 text-sm">
-            © {new Date().getFullYear()} BRaD. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <a
-              href="#"
-              className="w-10 h-10 bg-background/10 rounded-full flex items-center justify-center hover:bg-background/20 transition-colors"
-            >
-              <Twitter className="w-5 h-5" />
+
+          {/* For Candidates */}
+          <div className="footer-column">
+            <h4 className="footer-heading">For Candidates</h4>
+            <ul className="footer-links">
+              <li><a href="#">Find Internships</a></li>
+              <li><a href="#">Browse Jobs</a></li>
+              <li><a href="#">Career Resources</a></li>
+              <li><a href="#">Success Stories</a></li>
+            </ul>
+          </div>
+
+          {/* For Employers */}
+          <div className="footer-column">
+            <h4 className="footer-heading">For Employers</h4>
+            <ul className="footer-links">
+              <li><a href="#">Post Opportunities</a></li>
+              <li><a href="#">Find Talent</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">Case Studies</a></li>
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div className="footer-column">
+            <h4 className="footer-heading">Company</h4>
+            <ul className="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Footer Bottom */}
+        <div className="footer-bottom">
+          <p className="copyright">© {new Date().getFullYear()} BRaD. All rights reserved.</p>
+          
+          <div className="social-links">
+            <a href="#" className="social-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                <rect x="2" y="9" width="4" height="12"/>
+                <circle cx="4" cy="4" r="2"/>
+              </svg>
             </a>
-            <a
-              href="#"
-              className="w-10 h-10 bg-background/10 rounded-full flex items-center justify-center hover:bg-background/20 transition-colors"
-            >
-              <Linkedin className="w-5 h-5" />
+            <a href="#" className="social-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+              </svg>
             </a>
-            <a
-              href="#"
-              className="w-10 h-10 bg-background/10 rounded-full flex items-center justify-center hover:bg-background/20 transition-colors"
-            >
-              <Github className="w-5 h-5" />
+            <a href="#" className="social-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <path d="M17.5 6.5h.01"/>
+              </svg>
+            </a>
+            <a href="#" className="social-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <path d="m22 6-10 7L2 6"/>
+              </svg>
             </a>
           </div>
         </div>
@@ -41,4 +85,5 @@ export const LandingFooter = () => {
     </footer>
   );
 };
+
 
