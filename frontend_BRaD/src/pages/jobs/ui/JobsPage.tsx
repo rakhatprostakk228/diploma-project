@@ -6,17 +6,17 @@ import { JobsList } from '@widgets/jobs-list';
 
 export const JobsPage = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF', paddingTop: '4rem' }}>
       <AppHeader />
-      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <Link to="/app" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8" style={{ maxWidth: '1280px' }}>
+        <Link to="/app" className="inline-flex items-center gap-2 mb-6 transition-colors" style={{ color: 'rgba(51, 58, 47, 0.7)' }}>
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm font-medium">Back to Home</span>
         </Link>
 
         <div className="mb-6 sm:mb-8">
-          <h1 className="font-heading text-3xl sm:text-4xl font-bold mb-2">Find Your Dream Job</h1>
-          <p className="text-muted-foreground text-base sm:text-lg">
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#333A2F' }}>Find Your Dream Job</h1>
+          <p className="text-base sm:text-lg" style={{ color: 'rgba(51, 58, 47, 0.7)' }}>
             Discover remote opportunities from top companies worldwide
           </p>
         </div>

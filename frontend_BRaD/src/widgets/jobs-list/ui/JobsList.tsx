@@ -7,7 +7,7 @@ export const JobsList = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-muted-foreground">Loading jobs...</div>
+        <div style={{ color: 'rgba(51, 58, 47, 0.7)' }}>Loading jobs...</div>
       </div>
     );
   }
@@ -16,8 +16,8 @@ export const JobsList = () => {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <div className="text-4xl mb-4">🔍</div>
-        <h3 className="font-heading text-xl font-bold mb-2">No jobs found</h3>
-        <p className="text-muted-foreground">Try adjusting your filters</p>
+        <h3 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>No jobs found</h3>
+        <p style={{ color: 'rgba(51, 58, 47, 0.7)' }}>Try adjusting your filters</p>
       </div>
     );
   }

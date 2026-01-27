@@ -33,11 +33,11 @@ export const ProfilePage = () => {
 
   if (!currentUser || !user) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF', paddingTop: '4rem' }}>
         <AppHeader />
-        <main className="container mx-auto px-6 py-12">
+        <main className="container mx-auto px-6 py-12" style={{ maxWidth: '1280px' }}>
           <div className="text-center">
-            <h1 className="font-heading text-3xl font-bold mb-4">Please sign in</h1>
+            <h1 className="font-heading text-3xl font-bold mb-4" style={{ color: '#333A2F' }}>Please sign in</h1>
           </div>
         </main>
       </div>
@@ -45,23 +45,23 @@ export const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF' }}>
       <AppHeader />
-      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8" style={{ maxWidth: '1280px' }}>
         <div className="max-w-4xl mx-auto">
-          <div className="bg-card rounded-2xl shadow-card p-6 sm:p-8 mb-6">
+          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6" style={{ boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-6">
                 {user.avatar ? (
                   <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full" />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="w-12 h-12 text-primary" />
+                  <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ backgroundColor: '#EBEDDF' }}>
+                    <User className="w-12 h-12" style={{ color: '#333A2F' }} />
                   </div>
                 )}
                 <div>
-                  <h1 className="font-heading text-3xl font-bold mb-2">{user.name}</h1>
-                  <div className="flex items-center gap-4 text-muted-foreground">
+                  <h1 className="font-heading text-3xl font-bold mb-2" style={{ color: '#333A2F' }}>{user.name}</h1>
+                  <div className="flex items-center gap-4" style={{ color: 'rgba(51, 58, 47, 0.7)' }}>
                     <div className="flex items-center gap-1">
                       <Mail className="w-4 h-4" />
                       <span>{user.email}</span>
@@ -75,38 +75,61 @@ export const ProfilePage = () => {
                   </div>
                 </div>
               </div>
-              <Button onClick={() => setIsEditing(!isEditing)} variant="outline">
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium border-2"
+                style={{ 
+                  borderColor: 'rgba(51, 58, 47, 0.2)',
+                  color: '#333A2F',
+                  backgroundColor: 'transparent'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#333A2F';
+                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.borderColor = '#333A2F';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#333A2F';
+                  e.currentTarget.style.borderColor = 'rgba(51, 58, 47, 0.2)';
+                }}
+              >
                 {isEditing ? 'Cancel' : 'Edit Profile'}
-              </Button>
+              </button>
             </div>
 
             {isEditing ? (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Full Name</label>
-                  <Input {...register('name')} className="h-12" />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Full Name</label>
+                  <Input {...register('name')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Bio</label>
-                  <Textarea {...register('bio')} rows={4} />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Bio</label>
+                  <Textarea {...register('bio')} rows={4} style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Location</label>
-                  <Input {...register('location')} className="h-12" />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Location</label>
+                  <Input {...register('location')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Skills (comma separated)</label>
-                  <Input {...register('skills')} className="h-12" placeholder="React, TypeScript, Node.js" />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Skills (comma separated)</label>
+                  <Input {...register('skills')} className="h-12" placeholder="React, TypeScript, Node.js" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Experience</label>
-                  <Input {...register('experience')} className="h-12" placeholder="5 years" />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Experience</label>
+                  <Input {...register('experience')} className="h-12" placeholder="5 years" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Website</label>
-                  <Input {...register('website')} type="url" className="h-12" />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Website</label>
+                  <Input {...register('website')} type="url" className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
-                <Button type="submit" variant="hero" size="lg">
+                <Button 
+                  type="submit" 
+                  variant="hero" 
+                  size="lg"
+                  style={{ backgroundColor: '#333A2F', color: 'white', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                >
                   Save Changes
                 </Button>
               </form>
@@ -114,19 +137,20 @@ export const ProfilePage = () => {
               <div className="space-y-6">
                 {user.bio && (
                   <div>
-                    <h2 className="font-heading text-xl font-bold mb-2">About</h2>
-                    <p className="text-muted-foreground">{user.bio}</p>
+                    <h2 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>About</h2>
+                    <p style={{ color: 'rgba(51, 58, 47, 0.7)' }}>{user.bio}</p>
                   </div>
                 )}
 
                 {user.skills && user.skills.length > 0 && (
                   <div>
-                    <h2 className="font-heading text-xl font-bold mb-3">Skills</h2>
+                    <h2 className="font-heading text-xl font-bold mb-3" style={{ color: '#333A2F' }}>Skills</h2>
                     <div className="flex flex-wrap gap-2">
                       {user.skills.map((skill) => (
                         <span
                           key={skill}
-                          className="px-4 py-2 bg-secondary text-foreground rounded-lg text-sm font-medium"
+                          className="px-4 py-2 rounded-lg text-sm font-medium"
+                          style={{ backgroundColor: '#EBEDDF', color: '#333A2F' }}
                         >
                           {skill}
                         </span>
@@ -137,8 +161,8 @@ export const ProfilePage = () => {
 
                 {user.experience && (
                   <div>
-                    <h2 className="font-heading text-xl font-bold mb-2">Experience</h2>
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <h2 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>Experience</h2>
+                    <div className="flex items-center gap-2" style={{ color: 'rgba(51, 58, 47, 0.7)' }}>
                       <Briefcase className="w-4 h-4" />
                       <span>{user.experience}</span>
                     </div>
@@ -147,12 +171,13 @@ export const ProfilePage = () => {
 
                 {user.website && (
                   <div>
-                    <h2 className="font-heading text-xl font-bold mb-2">Website</h2>
+                    <h2 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>Website</h2>
                     <a
                       href={user.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-primary hover:underline"
+                      className="flex items-center gap-2 hover:underline"
+                      style={{ color: '#333A2F' }}
                     >
                       <Globe className="w-4 h-4" />
                       <span>{user.website}</span>

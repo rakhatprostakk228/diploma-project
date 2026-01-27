@@ -44,30 +44,41 @@ export const ChatWindow = ({
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
 
-  const containerClass = embedded
-    ? 'w-full h-full bg-card rounded-2xl shadow-xl flex flex-col'
-    : 'fixed bottom-4 right-4 w-96 h-[600px] bg-card rounded-2xl shadow-xl flex flex-col z-50';
+  const containerStyle = embedded
+    ? { backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }
+    : { 
+        position: 'fixed' as const, 
+        bottom: '1rem', 
+        right: '1rem', 
+        width: '24rem', 
+        height: '600px', 
+        backgroundColor: 'white', 
+        borderRadius: '1rem', 
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+        zIndex: 50
+      };
 
   return (
-    <div className={containerClass}>
-      <div className="flex items-center justify-between p-4 border-b">
+    <div className={`w-full h-full flex flex-col ${embedded ? '' : 'fixed bottom-4 right-4 w-96 h-[600px] z-50'}`} style={containerStyle}>
+      <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid rgba(51, 58, 47, 0.1)' }}>
         <div className="flex items-center gap-3">
           {receiverAvatar ? (
             <img src={receiverAvatar} alt={receiverName} className="w-10 h-10 rounded-full" />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-semibold">{receiverName[0]}</span>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#EBEDDF' }}>
+              <span className="font-semibold" style={{ color: '#333A2F' }}>{receiverName[0]}</span>
             </div>
           )}
           <div>
-            <p className="font-semibold">{receiverName}</p>
-            <p className="text-xs text-muted-foreground">Online</p>
+            <p className="font-semibold" style={{ color: '#333A2F' }}>{receiverName}</p>
+            <p className="text-xs" style={{ color: 'rgba(51, 58, 47, 0.6)' }}>Online</p>
           </div>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="transition-colors"
+            style={{ color: 'rgba(51, 58, 47, 0.6)' }}
           >
             <X className="w-5 h-5" />
           </button>
@@ -86,21 +97,21 @@ export const ChatWindow = ({
             >
               <div className={`flex gap-2 max-w-[80%] ${isOwn ? 'flex-row-reverse' : ''}`}>
                 {!isOwn && (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-semibold text-primary">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#EBEDDF' }}>
+                    <span className="text-xs font-semibold" style={{ color: '#333A2F' }}>
                       {sender?.name[0] || 'U'}
                     </span>
                   </div>
                 )}
                 <div
-                  className={`rounded-lg px-4 py-2 ${
-                    isOwn
-                      ? 'bg-hero-gradient text-primary-foreground'
-                      : 'bg-secondary text-foreground'
-                  }`}
+                  className="rounded-lg px-4 py-2"
+                  style={isOwn
+                    ? { backgroundColor: '#333A2F', color: 'white' }
+                    : { backgroundColor: '#EBEDDF', color: '#333A2F' }
+                  }
                 >
                   <p className="text-sm">{msg.content}</p>
-                  <p className={`text-xs mt-1 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                  <p className="text-xs mt-1" style={{ color: isOwn ? 'rgba(255, 255, 255, 0.7)' : 'rgba(51, 58, 47, 0.6)' }}>
                     {formatTime(msg.timestamp)}
                   </p>
                 </div>
@@ -111,7 +122,7 @@ export const ChatWindow = ({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t">
+      <div className="p-4" style={{ borderTop: '1px solid rgba(51, 58, 47, 0.1)' }}>
         <div className="flex gap-2">
           <Input
             value={message}
@@ -119,8 +130,14 @@ export const ChatWindow = ({
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Type a message..."
             className="flex-1"
+            style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }}
           />
-          <Button onClick={handleSend} variant="hero" size="icon">
+          <Button 
+            onClick={handleSend} 
+            variant="hero" 
+            size="icon"
+            style={{ backgroundColor: '#333A2F', color: 'white' }}
+          >
             <Send className="w-4 h-4" />
           </Button>
         </div>

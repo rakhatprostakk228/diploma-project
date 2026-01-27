@@ -38,31 +38,36 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ backgroundColor: '#EBEDDF' }}>
       <div className="w-full max-w-md">
-        <Link to="/app" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
-          <span className="font-heading text-2xl font-extrabold text-gradient">BRaD.</span>
+        <Link to="/app" className="inline-flex items-center gap-2 mb-8 transition-colors">
+          <img 
+            src="/images/logo/logo.png" 
+            alt="BRaD Logo" 
+            className="h-10 w-auto object-contain"
+          />
         </Link>
 
-        <div className="bg-card rounded-2xl shadow-xl p-8 relative">
+        <div className="bg-white rounded-2xl shadow-xl p-8 relative" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
           <Link
             to="/app"
-            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute top-4 right-4 transition-colors"
+            style={{ color: 'rgba(51, 58, 47, 0.6)' }}
           >
             <X className="w-5 h-5" />
           </Link>
-          <h2 className="font-heading text-3xl font-bold mb-2">Welcome Back</h2>
-          <p className="text-muted-foreground mb-6">Sign in to your account</p>
+          <h2 className="font-heading text-3xl font-bold mb-2" style={{ color: '#333A2F' }}>Welcome Back</h2>
+          <p className="mb-6" style={{ color: 'rgba(51, 58, 47, 0.6)' }}>Sign in to your account</p>
 
           {error && (
-            <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
+            <div className="mb-4 p-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#dc2626' }}>
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
+              <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>
                 Email or Username
               </label>
               <Input
@@ -71,14 +76,18 @@ export const LoginPage = () => {
                 {...register('email')}
                 placeholder="rakhat or you@example.com"
                 className="h-12"
+                style={{ 
+                  borderColor: 'rgba(51, 58, 47, 0.2)',
+                  borderRadius: '0.75rem'
+                }}
               />
               {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+                <p className="text-sm mt-1" style={{ color: '#dc2626' }}>{errors.email.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
+              <label htmlFor="password" className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>
                 Password
               </label>
               <Input
@@ -87,21 +96,36 @@ export const LoginPage = () => {
                 {...register('password')}
                 placeholder="••••••••"
                 className="h-12"
+                style={{ 
+                  borderColor: 'rgba(51, 58, 47, 0.2)',
+                  borderRadius: '0.75rem'
+                }}
               />
               {errors.password && (
-                <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
+                <p className="text-sm mt-1" style={{ color: '#dc2626' }}>{errors.password.message}</p>
               )}
             </div>
 
-            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              variant="hero" 
+              size="lg" 
+              className="w-full" 
+              disabled={isSubmitting}
+              style={{ 
+                backgroundColor: '#333A2F', 
+                color: 'white',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+              }}
+            >
               {isSubmitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm" style={{ color: 'rgba(51, 58, 47, 0.6)' }}>
               Don't have an account?{' '}
-              <Link to="/app/register" className="text-primary hover:underline font-medium">
+              <Link to="/app/register" className="hover:underline font-medium" style={{ color: '#333A2F' }}>
                 Sign up
               </Link>
             </p>
