@@ -23,5 +23,7 @@ export interface AuthUser {
   name: string;
   role: UserRole;
   avatar?: string;
+  accessToken?: string;
+  refreshToken?: string;
 }
 

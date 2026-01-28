@@ -1,16 +1,23 @@
 import { create } from 'zustand';
 import { User, AuthUser } from './types';
+import api from '@shared/lib/api';
+import { decodeJWT } from '@shared/lib/jwt';
 
 interface UserStore {
   currentUser: AuthUser | null;
   users: Record<string, User>;
   isAuthenticated: boolean;
+  currentProfile: any | null;
 
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string, role: 'candidate' | 'employer') => Promise<void>;
-  logout: () => void;
+  verifyEmail: (email: string, code: string) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
+  resetPassword: (email: string, code: string, newPassword: string) => Promise<void>;
+  logout: () => Promise<void>;
   getUser: (id: string) => User | undefined;
-  updateProfile: (userId: string, data: Partial<User>) => void;
+  loadProfile: () => Promise<void>;
+  updateProfile: (userId: string, data: Partial<User>) => Promise<void>;
 }
 
 const mockUsers: Record<string, User> = {
@@ -155,77 +162,205 @@ export const useUserStore = create<UserStore>((set, get) => ({
   currentUser: null,
   users: mockUsers,
   isAuthenticated: false,
+  currentProfile: null,
 
   login: async (email: string, password: string) => {
-    const user = Object.values(mockUsers).find(
-      (u) => u.email === email || u.id === email || u.name.toLowerCase() === email.toLowerCase()
-    );
-    
-    if (user && password === '123456') {
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      const { accessToken, refreshToken } = response.data;
+      
+      // Decode JWT to get user info
+      const payload = decodeJWT(accessToken);
+      if (!payload) {
+        throw new Error('Invalid token received');
+      }
+      
       const authUser: AuthUser = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        avatar: user.avatar,
+        id: payload.sub,
+        email: payload.email,
+        name: payload.email.split('@')[0], // Fallback name from email
+        role: payload.role.toLowerCase() as 'candidate' | 'employer' | 'admin',
+        accessToken,
+        refreshToken,
       };
+      
       set({ currentUser: authUser, isAuthenticated: true });
       localStorage.setItem('authUser', JSON.stringify(authUser));
-    } else {
-      throw new Error('Invalid credentials');
+      
+      // Load user profile after login
+      try {
+        const profileResponse = await api.get('/profile/me');
+        set({ currentProfile: profileResponse.data });
+      } catch (e) {
+        // Profile might not exist yet, that's okay
+        set({ currentProfile: null });
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+      throw new Error(errorMessage);
     }
   },
 
-  register: async (email: string, _password: string, name: string, role: 'candidate' | 'employer') => {
-    const newUser: User = {
-      id: `user${Date.now()}`,
-      email,
-      name,
-      role,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-    };
-    
-    mockUsers[newUser.id] = newUser;
-    
-    const authUser: AuthUser = {
-      id: newUser.id,
-      email: newUser.email,
-      name: newUser.name,
-      role: newUser.role,
-    };
-    
-    set({ 
-      currentUser: authUser, 
-      isAuthenticated: true,
-      users: { ...mockUsers },
-    });
-    localStorage.setItem('authUser', JSON.stringify(authUser));
+  register: async (email: string, password: string, _name: string, _role: 'candidate' | 'employer') => {
+    try {
+      // Note: Backend only supports CANDIDATE registration currently
+      // The role parameter is ignored, backend always creates CANDIDATE
+      const response = await api.post('/auth/register', { email, password });
+      
+      if (!response.data.ok) {
+        throw new Error('Registration failed');
+      }
+      // Registration successful, user needs to verify email
+      // Don't throw error, let the component handle navigation to verification page
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+      throw new Error(errorMessage);
+    }
   },
 
-  logout: () => {
-    set({ currentUser: null, isAuthenticated: false });
-    localStorage.removeItem('authUser');
+  verifyEmail: async (email: string, code: string) => {
+    try {
+      const response = await api.post('/auth/verify-email', { email, code });
+      const { accessToken, refreshToken } = response.data;
+      
+      // Decode JWT to get user info
+      const payload = decodeJWT(accessToken);
+      if (!payload) {
+        throw new Error('Invalid token received');
+      }
+      
+      const authUser: AuthUser = {
+        id: payload.sub,
+        email: payload.email,
+        name: payload.email.split('@')[0], // Fallback name from email
+        role: payload.role.toLowerCase() as 'candidate' | 'employer' | 'admin',
+        accessToken,
+        refreshToken,
+      };
+      
+      set({ currentUser: authUser, isAuthenticated: true });
+      localStorage.setItem('authUser', JSON.stringify(authUser));
+      
+      // Load user profile after email verification
+      try {
+        const profileResponse = await api.get('/profile/me');
+        set({ currentProfile: profileResponse.data });
+      } catch (e) {
+        // Profile might not exist yet, that's okay
+        set({ currentProfile: null });
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Email verification failed';
+      throw new Error(errorMessage);
+    }
+  },
+
+  requestPasswordReset: async (email: string) => {
+    try {
+      const response = await api.post('/auth/request-password-reset', { email });
+      // Always return success for security (don't reveal if email exists)
+      if (!response.data.ok) {
+        throw new Error('Failed to request password reset');
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to request password reset';
+      throw new Error(errorMessage);
+    }
+  },
+
+  resetPassword: async (email: string, code: string, newPassword: string) => {
+    try {
+      const response = await api.post('/auth/reset-password', { email, code, newPassword });
+      if (!response.data.ok) {
+        throw new Error('Password reset failed');
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Password reset failed';
+      throw new Error(errorMessage);
+    }
+  },
+
+  logout: async () => {
+    try {
+      const authUser = get().currentUser;
+      if (authUser?.refreshToken) {
+        // Try to call logout endpoint, but don't fail if it errors
+        try {
+          await api.post('/auth/logout', { refreshToken: authUser.refreshToken });
+        } catch (e) {
+          // Ignore logout errors
+        }
+      }
+    } catch (e) {
+      // Ignore errors
+    } finally {
+      set({ currentUser: null, isAuthenticated: false });
+      localStorage.removeItem('authUser');
+    }
   },
 
   getUser: (id: string) => {
     return get().users[id];
   },
 
-  updateProfile: (userId: string, data: Partial<User>) => {
-    const users = { ...get().users };
-    if (users[userId]) {
-      users[userId] = { ...users[userId], ...data };
-      set({ users });
+  loadProfile: async () => {
+    try {
+      const response = await api.get('/profile/me');
+      set({ currentProfile: response.data });
+    } catch (error: any) {
+      // If profile doesn't exist or error, set to null
+      set({ currentProfile: null });
+    }
+  },
+
+  updateProfile: async (_userId: string, data: any) => {
+    try {
+      // Map frontend form data to backend Profile DTO
+      const profileData: any = {};
+      if (data.firstName !== undefined) profileData.firstName = data.firstName;
+      if (data.lastName !== undefined) profileData.lastName = data.lastName;
+      if (data.bio !== undefined) profileData.bio = data.bio;
+      if (data.city !== undefined) profileData.city = data.city;
+      if (data.country !== undefined) profileData.country = data.country;
+      if (data.university !== undefined) profileData.university = data.university;
+      if (data.faculty !== undefined) profileData.faculty = data.faculty;
+      if (data.major !== undefined) profileData.major = data.major;
+      if (data.graduationYear !== undefined) profileData.graduationYear = data.graduationYear;
+      if (data.githubUrl !== undefined) profileData.githubUrl = data.githubUrl;
+      if (data.linkedinUrl !== undefined) profileData.linkedinUrl = data.linkedinUrl;
+      if (data.portfolioUrl !== undefined) profileData.portfolioUrl = data.portfolioUrl;
+
+      const response = await api.patch('/profile/me', profileData);
+      set({ currentProfile: response.data });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to update profile';
+      throw new Error(errorMessage);
     }
   },
 }));
 
+// Initialize from localStorage on store creation
 const storedAuth = localStorage.getItem('authUser');
 if (storedAuth) {
   try {
-    const authUser = JSON.parse(storedAuth);
-    useUserStore.setState({ currentUser: authUser, isAuthenticated: true });
+    const authUser = JSON.parse(storedAuth) as AuthUser;
+    // Check if token is expired (basic check)
+    if (authUser.accessToken) {
+      const payload = decodeJWT(authUser.accessToken);
+      if (payload && payload.exp) {
+        const expirationTime = payload.exp * 1000; // Convert to milliseconds
+        if (Date.now() < expirationTime) {
+          useUserStore.setState({ currentUser: authUser, isAuthenticated: true });
+        } else {
+          // Token expired, clear it
+          localStorage.removeItem('authUser');
+        }
+      } else {
+        useUserStore.setState({ currentUser: authUser, isAuthenticated: true });
+      }
+    } else {
+      useUserStore.setState({ currentUser: authUser, isAuthenticated: true });
+    }
   } catch (e) {
     localStorage.removeItem('authUser');
   }

@@ -3,37 +3,101 @@ import { Button, Input, Textarea } from '@shared/ui';
 import { useUserStore } from '@entities/user';
 import { useForm } from 'react-hook-form';
 import { User, MapPin, Briefcase, Globe, Mail } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const ProfilePage = () => {
-  const { currentUser, getUser, updateProfile } = useUserStore();
+  const { currentUser, getUser, updateProfile, loadProfile, currentProfile } = useUserStore();
   const [isEditing, setIsEditing] = useState(false);
-  const user = currentUser ? getUser(currentUser.id) : null;
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { register, handleSubmit } = useForm({
+  // Load profile from backend when component mounts
+  useEffect(() => {
+    if (currentUser && currentUser.isAuthenticated) {
+      loadProfile().finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
+    }
+  }, [currentUser]);
+
+  // Use currentUser data if getUser returns null (user logged in via API)
+  const userFromStore = currentUser ? getUser(currentUser.id) : null;
+  
+  // Combine profile data from backend with currentUser data
+  const profileName = currentProfile?.firstName && currentProfile?.lastName 
+    ? `${currentProfile.firstName} ${currentProfile.lastName}`.trim()
+    : currentProfile?.firstName || currentProfile?.lastName 
+    ? (currentProfile.firstName || currentProfile.lastName)
+    : currentUser?.name || currentUser?.email?.split('@')[0] || 'User';
+
+  const user = userFromStore || (currentUser ? {
+    id: currentUser.id,
+    email: currentProfile?.email || currentUser.email,
+    name: profileName,
+    role: currentUser.role,
+    status: 'active' as const,
+    avatar: currentUser.avatar,
+    bio: currentProfile?.bio || '',
+    location: currentProfile?.city || currentProfile?.country 
+      ? [currentProfile.city, currentProfile.country].filter(Boolean).join(', ')
+      : '',
+    skills: [], // Skills need special handling with backend
+    experience: currentProfile?.graduationYear 
+      ? `Graduation: ${currentProfile.graduationYear}`
+      : '',
+    website: currentProfile?.portfolioUrl || currentProfile?.githubUrl || currentProfile?.linkedinUrl || '',
+    createdAt: new Date().toISOString(),
+  } : null);
+
+  const { register, handleSubmit, reset } = useForm({
     defaultValues: {
-      name: user?.name || '',
-      bio: user?.bio || '',
-      location: user?.location || '',
-      skills: user?.skills?.join(', ') || '',
-      experience: user?.experience || '',
-      website: user?.website || '',
+      firstName: currentProfile?.firstName || '',
+      lastName: currentProfile?.lastName || '',
+      bio: currentProfile?.bio || user?.bio || '',
+      city: currentProfile?.city || '',
+      country: currentProfile?.country || '',
+      university: currentProfile?.university || '',
+      major: currentProfile?.major || '',
+      graduationYear: currentProfile?.graduationYear || '',
+      githubUrl: currentProfile?.githubUrl || '',
+      linkedinUrl: currentProfile?.linkedinUrl || '',
+      portfolioUrl: currentProfile?.portfolioUrl || '',
     },
   });
 
-  const onSubmit = (data: any) => {
-    if (currentUser) {
-      updateProfile(currentUser.id, {
-        ...data,
-        skills: data.skills.split(',').map((s: string) => s.trim()).filter(Boolean),
+  // Reset form when profile loads
+  useEffect(() => {
+    if (currentProfile) {
+      reset({
+        firstName: currentProfile.firstName || '',
+        lastName: currentProfile.lastName || '',
+        bio: currentProfile.bio || '',
+        city: currentProfile.city || '',
+        country: currentProfile.country || '',
+        university: currentProfile.university || '',
+        major: currentProfile.major || '',
+        graduationYear: currentProfile.graduationYear || '',
+        githubUrl: currentProfile.githubUrl || '',
+        linkedinUrl: currentProfile.linkedinUrl || '',
+        portfolioUrl: currentProfile.portfolioUrl || '',
       });
-      setIsEditing(false);
+    }
+  }, [currentProfile, reset]);
+
+  const onSubmit = async (data: any) => {
+    if (currentUser) {
+      try {
+        await updateProfile(currentUser.id, data);
+        await loadProfile(); // Reload profile after update
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Failed to update profile:', error);
+      }
     }
   };
 
-  if (!currentUser || !user) {
+  if (!currentUser) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF', paddingTop: '4rem' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF', paddingTop: '8rem' }}>
         <AppHeader />
         <main className="container mx-auto px-6 py-12" style={{ maxWidth: '1280px' }}>
           <div className="text-center">
@@ -44,8 +108,21 @@ export const ProfilePage = () => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF', paddingTop: '8rem' }}>
+        <AppHeader />
+        <main className="container mx-auto px-6 py-12" style={{ maxWidth: '1280px' }}>
+          <div className="text-center">
+            <h1 className="font-heading text-3xl font-bold mb-4" style={{ color: '#333A2F' }}>Loading profile...</h1>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#EBEDDF', paddingTop: '6rem' }}>
       <AppHeader />
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8" style={{ maxWidth: '1280px' }}>
         <div className="max-w-4xl mx-auto">
@@ -100,29 +177,55 @@ export const ProfilePage = () => {
 
             {isEditing ? (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Full Name</label>
-                  <Input {...register('name')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>First Name</label>
+                    <Input {...register('firstName')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Last Name</label>
+                    <Input {...register('lastName')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Bio</label>
                   <Textarea {...register('bio')} rows={4} style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Location</label>
-                  <Input {...register('location')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>City</label>
+                    <Input {...register('city')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Country</label>
+                    <Input {...register('country')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>University</label>
+                    <Input {...register('university')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Major</label>
+                    <Input {...register('major')} className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Skills (comma separated)</label>
-                  <Input {...register('skills')} className="h-12" placeholder="React, TypeScript, Node.js" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Graduation Year</label>
+                  <Input {...register('graduationYear', { valueAsNumber: true })} type="number" className="h-12" placeholder="2024" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Experience</label>
-                  <Input {...register('experience')} className="h-12" placeholder="5 years" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>GitHub URL</label>
+                  <Input {...register('githubUrl')} type="url" className="h-12" placeholder="https://github.com/username" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Website</label>
-                  <Input {...register('website')} type="url" className="h-12" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>LinkedIn URL</label>
+                  <Input {...register('linkedinUrl')} type="url" className="h-12" placeholder="https://linkedin.com/in/username" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#333A2F' }}>Portfolio URL</label>
+                  <Input {...register('portfolioUrl')} type="url" className="h-12" placeholder="https://yourportfolio.com" style={{ borderColor: 'rgba(51, 58, 47, 0.2)', borderRadius: '0.75rem' }} />
                 </div>
                 <Button 
                   type="submit" 
@@ -159,29 +262,59 @@ export const ProfilePage = () => {
                   </div>
                 )}
 
-                {user.experience && (
+                {(currentProfile?.university || currentProfile?.major) && (
                   <div>
-                    <h2 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>Experience</h2>
+                    <h2 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>Education</h2>
                     <div className="flex items-center gap-2" style={{ color: 'rgba(51, 58, 47, 0.7)' }}>
                       <Briefcase className="w-4 h-4" />
-                      <span>{user.experience}</span>
+                      <span>
+                        {[currentProfile.university, currentProfile.major, currentProfile.graduationYear].filter(Boolean).join(', ')}
+                      </span>
                     </div>
                   </div>
                 )}
 
-                {user.website && (
+                {(currentProfile?.githubUrl || currentProfile?.linkedinUrl || currentProfile?.portfolioUrl) && (
                   <div>
-                    <h2 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>Website</h2>
-                    <a
-                      href={user.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 hover:underline"
-                      style={{ color: '#333A2F' }}
-                    >
-                      <Globe className="w-4 h-4" />
-                      <span>{user.website}</span>
-                    </a>
+                    <h2 className="font-heading text-xl font-bold mb-2" style={{ color: '#333A2F' }}>Links</h2>
+                    <div className="flex flex-col gap-2">
+                      {currentProfile.githubUrl && (
+                        <a
+                          href={currentProfile.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 hover:underline"
+                          style={{ color: '#333A2F' }}
+                        >
+                          <Globe className="w-4 h-4" />
+                          <span>GitHub</span>
+                        </a>
+                      )}
+                      {currentProfile.linkedinUrl && (
+                        <a
+                          href={currentProfile.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 hover:underline"
+                          style={{ color: '#333A2F' }}
+                        >
+                          <Globe className="w-4 h-4" />
+                          <span>LinkedIn</span>
+                        </a>
+                      )}
+                      {currentProfile.portfolioUrl && (
+                        <a
+                          href={currentProfile.portfolioUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 hover:underline"
+                          style={{ color: '#333A2F' }}
+                        >
+                          <Globe className="w-4 h-4" />
+                          <span>Portfolio</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

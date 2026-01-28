@@ -9,8 +9,8 @@ export const AppHeader = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/app');
   };
 
@@ -46,17 +46,23 @@ export const AppHeader = () => {
                 <MessageSquare className="w-4 h-4" />
               </Link>
               <div className="flex items-center gap-2">
-                {currentUser?.avatar ? (
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.name}
-                    className="w-8 h-8 rounded-full hidden sm:block"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hidden sm:block">
-                    <User className="w-4 h-4 text-primary" />
-                  </div>
-                )}
+                <Link 
+                  to="/app/profile" 
+                  className="hidden sm:block w-8 h-8 flex-shrink-0"
+                  style={{ lineHeight: 0 }}
+                >
+                  {currentUser?.avatar ? (
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <User className="w-4 h-4 text-primary" />
+                    </div>
+                  )}
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="nav-btn nav-btn-ghost hidden sm:inline-flex items-center gap-2"

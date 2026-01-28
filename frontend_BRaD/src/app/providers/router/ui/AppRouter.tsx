@@ -5,7 +5,7 @@ import { JobsPage, JobDetailPage } from '@pages/jobs';
 import { ProfilePage } from '@pages/profile';
 import { EmployerPage } from '@pages/employer';
 import { ChatPage } from '@pages/chat';
-import { LoginPage, RegisterPage } from '@pages/auth';
+import { LoginPage, RegisterPage, VerifyEmailPage, RequestPasswordResetPage, ResetPasswordPage } from '@pages/auth';
 
 export const AppRouter = () => {
   return (
@@ -15,6 +15,9 @@ export const AppRouter = () => {
         <Route path="/app" element={<AppPage />} />
         <Route path="/app/login" element={<LoginPage />} />
         <Route path="/app/register" element={<RegisterPage />} />
+        <Route path="/app/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/app/forgot-password" element={<RequestPasswordResetPage />} />
+        <Route path="/app/reset-password" element={<ResetPasswordPage />} />
         <Route path="/app/jobs" element={<JobsPage />} />
         <Route path="/app/jobs/:id" element={<JobDetailPage />} />
         <Route path="/app/profile" element={<ProfilePage />} />

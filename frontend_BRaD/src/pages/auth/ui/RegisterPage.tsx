@@ -10,7 +10,7 @@ import { useUserStore } from '@entities/user';
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   role: z.enum(['candidate', 'employer']),
 });
 
@@ -36,7 +36,8 @@ export const RegisterPage = () => {
     try {
       setError(null);
       await registerUser(data.email, data.password, data.name, data.role);
-      navigate('/app');
+      // Redirect to email verification page
+      navigate(`/app/verify-email?email=${encodeURIComponent(data.email)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     }
@@ -45,11 +46,11 @@ export const RegisterPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ backgroundColor: '#EBEDDF' }}>
       <div className="w-full max-w-md">
-        <Link to="/app" className="inline-flex items-center gap-2 mb-8 transition-colors">
+        <Link to="/app" className="inline-flex items-center gap-2 mb-2 transition-colors">
           <img 
             src="/images/logo/logo.png" 
             alt="BRaD Logo" 
-            className="h-10 w-auto object-contain"
+            className="h-24 w-auto object-contain"
           />
         </Link>
 
